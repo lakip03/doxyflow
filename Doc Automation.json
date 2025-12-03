@@ -59,7 +59,7 @@
       "name": "Create a database page",
       "credentials": {
         "notionApi": {
-          "id": "kZthuW5yR2vFlxLE",
+          "id": "",
           "name": "Notion account"
         }
       }
@@ -99,7 +99,7 @@
       "name": "OpenAI Chat Model",
       "credentials": {
         "openAiApi": {
-          "id": "Ts3TW4sT00jBMmxy",
+          "id": "",
           "name": "OpenAi account"
         }
       }
@@ -347,7 +347,7 @@
       "name": "Append a block",
       "credentials": {
         "notionApi": {
-          "id": "kZthuW5yR2vFlxLE",
+          "id": "",
           "name": "Notion account"
         }
       }
