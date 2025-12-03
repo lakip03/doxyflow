@@ -1,0 +1,474 @@
+{
+  "name": "Doc Automation",
+  "nodes": [
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -384,
+        0
+      ],
+      "id": "db59cfda-b504-4245-ad1c-0605ee21dfe1",
+      "name": "When chat message received",
+      "webhookId": "4adf4ad1-7685-41ad-ae34-99722343a329"
+    },
+    {
+      "parameters": {
+        "resource": "databasePage",
+        "databaseId": {
+          "__rl": true,
+          "value": "2867e4fe-d68e-8081-9df4-f9868de469b4",
+          "mode": "list",
+          "cachedResultName": "Documentation",
+          "cachedResultUrl": "https://www.notion.so/2867e4fed68e80819df4f9868de469b4"
+        },
+        "title": "={{ $json.output.title }}",
+        "simple": false,
+        "propertiesUi": {
+          "propertyValues": [
+            {
+              "key": "type|select",
+              "selectValue": "={{ $json.output.type }}"
+            },
+            {
+              "key": "Version|rich_text",
+              "textContent": "={{ $json.output.Version }}"
+            },
+            {
+              "key": "Feature|rich_text",
+              "textContent": "={{ $json.output.Feature }}"
+            },
+            {
+              "key": "Last Updated|date",
+              "date": "={{ DateTime.now() }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.notion",
+      "typeVersion": 2.2,
+      "position": [
+        320,
+        416
+      ],
+      "id": "ee583b31-c1c5-4f4f-b828-e605fb5df57c",
+      "name": "Create a database page",
+      "credentials": {
+        "notionApi": {
+          "id": "kZthuW5yR2vFlxLE",
+          "name": "Notion account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## Create page",
+        "height": 448,
+        "width": 464
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        0,
+        160
+      ],
+      "typeVersion": 1,
+      "id": "2742b04c-230c-4c72-9149-dd1f97c3a775",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4.1-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-4.1-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        64,
+        448
+      ],
+      "id": "ef5f2401-a418-485c-b9b1-0105f7a92a02",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "Ts3TW4sT00jBMmxy",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## Page setup",
+        "height": 448,
+        "width": 464
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        512,
+        -128
+      ],
+      "typeVersion": 1,
+      "id": "aa4972b8-0b79-4827-92f0-14bfbb67df3c",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "chatInput",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        -176,
+        0
+      ],
+      "id": "56a5f369-7f5f-4586-84b8-6f99c8d4d4ce",
+      "name": "Split Out"
+    },
+    {
+      "parameters": {
+        "text": "={{ $json.chatInput }}",
+        "attributes": {
+          "attributes": [
+            {
+              "name": "title",
+              "description": "Title of what does code do - Very short for a page title",
+              "required": true
+            },
+            {
+              "name": "type",
+              "description": "Enum of the following: (         new-feature,         bug-fix,         refactoring,       )",
+              "required": true
+            },
+            {
+              "name": "Version",
+              "description": "Approprate Version",
+              "required": true
+            },
+            {
+              "name": "Feature",
+              "description": "Name of the feature for which code is implemented",
+              "required": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.informationExtractor",
+      "typeVersion": 1.2,
+      "position": [
+        144,
+        192
+      ],
+      "id": "45c0b64d-ee4e-4e89-b79a-890a2bf985fa",
+      "name": "ExtractNotionPageInformation"
+    },
+    {
+      "parameters": {
+        "text": "={{ $json.chatInput }}",
+        "attributes": {
+          "attributes": [
+            {
+              "name": "Summary",
+              "description": "High-level overview of what the code does. Keep it short and concise. ",
+              "required": true
+            },
+            {
+              "name": "Background",
+              "description": "Context and history (optional, explains why this exists)\n\n<Requrements>\nExplain only when there is github diff file, else ignore this\n</Requrements>"
+            },
+            {
+              "name": "Requirements",
+              "description": " What needs to be done, constraints, acceptance criteria",
+              "required": true
+            },
+            {
+              "name": "Arhitecture",
+              "description": "System structure, design patterns, how components interact",
+              "required": true
+            },
+            {
+              "name": "Components",
+              "description": "Individual classes and components of code snippet",
+              "required": true
+            },
+            {
+              "name": "APIs",
+              "description": "Interfaces, endpoints, public functions, how to use/interact with it"
+            },
+            {
+              "name": "Risk",
+              "description": "<IMPORTANT>\nPotential issues, limitations, technical debt, known problems\n</IMPORTANT>",
+              "required": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.informationExtractor",
+      "typeVersion": 1.2,
+      "position": [
+        624,
+        0
+      ],
+      "id": "04a6df30-ad2f-4f64-9f26-5ffc64a52057",
+      "name": "ExtractInformationFromCodeSnippet"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        544,
+        160
+      ],
+      "id": "d7bc15cf-ce28-4004-86b2-e2069962a9a4",
+      "name": "OpenAI Chat Model1",
+      "credentials": {
+        "openAiApi": {
+          "id": "Ts3TW4sT00jBMmxy",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## Insert info into page",
+        "height": 448,
+        "width": 464
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1072,
+        -128
+      ],
+      "typeVersion": 1,
+      "id": "ffe7e65a-bf0f-4ede-81ae-e0d1823572e1",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        1152,
+        32
+      ],
+      "id": "28b6c977-337f-4655-adbe-f02f1c919dd5",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "jsCode": "const pageId = $input.first().json.id;\n\nreturn {\n  pageId: pageId,\n  pageUrl: `https://notion.so/${pageId.replace(/-/g, '')}`,\n  success: true\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        848,
+        192
+      ],
+      "id": "7acd54a6-1d11-40fd-9ec0-b9be8c5b55c4",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "resource": "block",
+        "blockId": {
+          "__rl": true,
+          "value": "={{ $json.pageId }}",
+          "mode": "id"
+        },
+        "blockUi": {
+          "blockValues": [
+            {
+              "type": "heading_2",
+              "textContent": "Summary"
+            },
+            {
+              "textContent": "={{ $json.output.Summary }}"
+            },
+            {
+              "type": "heading_2",
+              "textContent": ":white_check_mark: Requirements"
+            },
+            {
+              "textContent": "={{ $json.output.Requirements }}"
+            },
+            {
+              "type": "heading_2",
+              "textContent": ":classical_building: Architecture and Design"
+            },
+            {
+              "textContent": "={{ $json.output.Arhitecture }}"
+            },
+            {
+              "type": "heading_2",
+              "textContent": ":art: Components"
+            },
+            {
+              "textContent": "={{ $json.output.Components }}"
+            },
+            {
+              "type": "heading_2",
+              "textContent": ":warning: Risk"
+            },
+            {
+              "textContent": "={{ $json.output.Risk }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.notion",
+      "typeVersion": 2.2,
+      "position": [
+        1360,
+        32
+      ],
+      "id": "574a00e1-3bdd-41ea-9b68-ba6bad3c11ab",
+      "name": "Append a block",
+      "credentials": {
+        "notionApi": {
+          "id": "kZthuW5yR2vFlxLE",
+          "name": "Notion account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "ExtractNotionPageInformation",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create a database page": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "ExtractNotionPageInformation",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "ExtractInformationFromCodeSnippet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ExtractNotionPageInformation": {
+      "main": [
+        [
+          {
+            "node": "Create a database page",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "ExtractInformationFromCodeSnippet",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ExtractInformationFromCodeSnippet": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Append a block",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "8b0e2461-f5e0-4a41-b619-225b570e7e55",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "a461ebe1f1a2aa7c5b12063a8127a466d5ad932ba4b3cce60fcce67ff886eaf2"
+  },
+  "id": "XpMh2eKbxSB7Insx",
+  "tags": []
+}
